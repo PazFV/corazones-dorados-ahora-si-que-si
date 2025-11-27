@@ -1,0 +1,20 @@
+
+<div class="bg-white p-3 rounded-lg border">
+  <div class="grid grid-cols-2 grid-rows-3 gap-2 h-64">
+    @for (room of houseLayout; track room.name) {
+      <div 
+        class="rounded-md flex items-center justify-center text-center p-2 transition-all duration-300"
+        [class]="room.area"
+        [class.bg-amber-400]="currentRoom() === room.name"
+        [class.text-white]="currentRoom() === room.name"
+        [class.font-bold]="currentRoom() === room.name"
+        [class.shadow-lg]="currentRoom() === room.name"
+        [class.scale-105]="currentRoom() === room.name"
+        [class.bg-slate-200]="currentRoom() !== room.name"
+        [class.text-slate-600]="currentRoom() !== room.name"
+      >
+        <span class="text-sm">{{ room.label }}</span>
+      </div>
+    }
+  </div>
+</div>
