@@ -51,9 +51,9 @@ export class AppComponent implements OnInit {
         ...currentReports,
         [patient.patientid]: { report: generatedReport, isLoading: false }
       }));
-    } catch (e) {
+    } catch (e: any) {
       console.error('Error generating report:', e);
-      const errorMessage = 'Hubo un error al generar el informe. Inténtelo de nuevo.';
+      const errorMessage = e?.message || 'Hubo un error al generar el informe. Inténtelo de nuevo.';
       this.reports.update(currentReports => ({
         ...currentReports,
         [patient.patientid]: { report: errorMessage, isLoading: false }

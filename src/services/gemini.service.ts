@@ -3,20 +3,34 @@ import { Injectable } from '@angular/core';
 import { GoogleGenAI } from '@google/genai';
 import { PirSensorData } from '../models/sensor-data.model';
 
+// This allows TypeScript to compile even though `process` isn't a standard browser global.
+// It's expected to be injected by the runtime environment.
+declare const process: any;
+
 @Injectable({
   providedIn: 'root'
 })
 export class GeminiService {
-  private genAI: GoogleGenAI;
+  private genAI: GoogleGenAI | undefined;
 
   constructor() {
-    // The API key is managed by the environment as per requirements.
-    this.genAI = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    try {
+      // Safely access the API key to prevent "process is not defined" errors in the browser.
+      const apiKey = (typeof process !== 'undefined' && process.env?.API_KEY) ? process.env.API_KEY : undefined;
+
+      if (apiKey) {
+        this.genAI = new GoogleGenAI({ apiKey: apiKey });
+      } else {
+        console.warn("Gemini API key not found. Report generation will be unavailable.");
+      }
+    } catch (e) {
+      console.error("Error initializing Gemini Service:", e);
+    }
   }
 
   async generateDailyReport(data: PirSensorData): Promise<string> {
-    if (!process.env.API_KEY) {
-      return Promise.reject("API key for Gemini is not configured.");
+    if (!this.genAI) {
+      throw new Error("El servicio de Gemini no está inicializado. La clave API puede que no esté configurada.");
     }
     
     let movementHistoryArray: string[] = [];
@@ -52,7 +66,7 @@ export class GeminiService {
       return response.text;
     } catch (error) {
       console.error('Error calling Gemini API:', error);
-      throw new Error('Failed to generate report from Gemini API.');
+      throw new Error('Fallo al generar el informe desde la API de Gemini.');
     }
   }
 }
