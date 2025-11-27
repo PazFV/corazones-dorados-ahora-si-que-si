@@ -1,4 +1,3 @@
-
 <main class="min-h-screen bg-slate-50 text-slate-800 p-4 sm:p-6 lg:p-8">
   <div class="max-w-7xl mx-auto">
     <header class="text-center mb-10">
@@ -22,17 +21,17 @@
     }
 
     @if (!isLoading() && !error()) {
-      <div class="space-y-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         @for (patient of sensorData(); track patient.id) {
-          <section class="bg-white p-6 rounded-2xl shadow-lg border border-slate-100">
+          <section class="bg-white p-4 rounded-2xl shadow-lg border border-slate-100 flex flex-col">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b pb-4 border-slate-200">
               <h2 class="text-2xl font-bold text-slate-700">Resumen de {{ patient.patientid }}</h2>
-              <span class="text-sm text-slate-500 mt-2 sm:mt-0">Última actualización: {{ patient.lastmovementtimestamp | date:'short' }}</span>
+              <span class="text-sm text-slate-500 mt-2 sm:mt-0 whitespace-nowrap">{{ patient.lastmovementtimestamp | date:'short' }}</span>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow">
               <!-- Columna 1: Mapa y usuarios -->
-              <div class="lg:col-span-1 space-y-8">
+              <div class="space-y-6">
                 <div class="bg-slate-50 p-4 rounded-xl border">
                   <h3 class="font-semibold text-lg mb-3 text-slate-600">Ubicación Actual</h3>
                   <app-map [currentRoom]="patient.currentroom"></app-map>
@@ -53,7 +52,7 @@
               </div>
               
               <!-- Columna 2: Pasos y Informe -->
-              <div class="lg:col-span-2 space-y-8">
+              <div class="space-y-6">
                 <div class="bg-slate-50 p-4 rounded-xl border">
                   <h3 class="font-semibold text-lg mb-3 text-slate-600">Pasos Caminados Hoy</h3>
                   <div class="flex items-center space-x-4">
@@ -63,18 +62,20 @@
                   </div>
                 </div>
                 
-                <div class="bg-white p-6 rounded-xl border shadow-inner">
+                <div class="bg-white p-4 rounded-xl border shadow-inner flex flex-col flex-grow">
                   <h3 class="font-semibold text-lg mb-3 text-slate-600">Informe Diario del Bienestar</h3>
                   
-                  @if (getPatientReport(patient.patientid)) {
-                    <div class="bg-amber-50 text-amber-800 p-4 rounded-lg text-sm leading-relaxed whitespace-pre-wrap">
-                      {{ getPatientReport(patient.patientid) }}
-                    </div>
-                  } @else {
-                    <p class="text-sm text-slate-500 mb-4">
-                      Haga clic en el botón para generar un resumen del día de {{ patient.patientid }} utilizando inteligencia artificial.
-                    </p>
-                  }
+                  <div class="flex-grow">
+                    @if (getPatientReport(patient.patientid)) {
+                      <div class="bg-amber-50 text-amber-800 p-3 rounded-lg text-sm leading-relaxed whitespace-pre-wrap">
+                        {{ getPatientReport(patient.patientid) }}
+                      </div>
+                    } @else {
+                      <p class="text-sm text-slate-500 mb-4">
+                        Haga clic en el botón para generar un resumen del día de {{ patient.patientid }} utilizando inteligencia artificial.
+                      </p>
+                    }
+                  </div>
 
                   <button (click)="generateReport(patient)" [disabled]="isReportLoading(patient.patientid)"
                     class="mt-4 w-full flex items-center justify-center px-4 py-2 bg-amber-500 text-white font-semibold rounded-lg hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors duration-200 disabled:bg-slate-300 disabled:cursor-not-allowed">

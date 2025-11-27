@@ -1,5 +1,6 @@
 {
   "name": "Corazones Dorados",
   "description": "An application to help families monitor elderly loved ones at home, providing real-time location, activity tracking, and AI-powered daily summaries.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "typescript": "~5.9.0"
 }
