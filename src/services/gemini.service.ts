@@ -1,11 +1,28 @@
-
 import { Injectable } from '@angular/core';
 import { GoogleGenAI } from '@google/genai';
 import { PirSensorData } from '../models/sensor-data.model';
 
 // This allows TypeScript to compile even though `process` isn't a standard browser global.
-// It's expected to be injected by the runtime environment.
 declare const process: any;
+
+/**
+ * Safely retrieves the Gemini API key from environment variables.
+ * This function is wrapped in a try-catch block to prevent runtime errors
+ * in browser environments where `process` is not defined.
+ * @returns The API key as a string, or undefined if not found or an error occurs.
+ */
+function getApiKey(): string | undefined {
+  try {
+    // This check prevents ReferenceError: process is not defined
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+    return undefined;
+  } catch (error) {
+    console.warn('Could not access process.env.API_KEY. This is expected in a browser environment without a bundler polyfill.', error);
+    return undefined;
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -14,17 +31,12 @@ export class GeminiService {
   private genAI: GoogleGenAI | undefined;
 
   constructor() {
-    try {
-      // Safely access the API key to prevent "process is not defined" errors in the browser.
-      const apiKey = (typeof process !== 'undefined' && process.env?.API_KEY) ? process.env.API_KEY : undefined;
+    const apiKey = getApiKey();
 
-      if (apiKey) {
-        this.genAI = new GoogleGenAI({ apiKey: apiKey });
-      } else {
-        console.warn("Gemini API key not found. Report generation will be unavailable.");
-      }
-    } catch (e) {
-      console.error("Error initializing Gemini Service:", e);
+    if (apiKey) {
+      this.genAI = new GoogleGenAI({ apiKey: apiKey });
+    } else {
+      console.warn("Gemini API key not found. Report generation will be unavailable.");
     }
   }
 
